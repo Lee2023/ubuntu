@@ -1,0 +1,64 @@
+挂起不唤醒主要是laptop_mode（便捷电脑模式）没有开启，我是通过Ubuntu server安装，默认没有开启。
+
+A:
+安装 pm-utils 这个包。pm-utils 软件包提供了简单的 shell 命令行工具，用于挂起和休眠你的计算机。
+pm-utils通过终端输入下面的命令可以进行挂起，休眠等操作：
+pm-hibernate, pm-is-supported, pm-powersave, pm-suspend, pm-suspend-hybrid
+
+安装软件包命令：
+pipci@ubuntu:~$ sudo apt-get install pm-utils
+
+
+
+B:
+1、安装laptop-mode-tools这个包，便捷电脑模式配置工具。
+
+2、安装软件包命令：
+pipci@ubuntu:~$ sudo apt-get install laptop-mode-tools
+
+3、虽然安装完laptop-mode-tools，但是是不是就自动启动了laptop_mode模式了呢?我们用下列命令来判断Laptop是否启用了laptop_mode，如果显示结果为0，则表示未启动，如果为非0的数字则表示启动了。
+命令：
+pipci@ubuntu:~$ cat /proc/sys/vm/laptop_mode
+
+4、修改配置文件/etc/default/acpi-support，更改ENABLE_LAPTOP_MODE=true
+
+重启电脑，在ubuntu挂起后，基本上就不会遇到无法唤醒的情况了。
+
+5、如果在上面的配置文件/etc/default/acpi-support中没有找到ENABLE_LAPTOP_MODE= 这个选项，那么会在配置文件的最后看到下面的提示：
+...........
+..........
+# Note: to enable "laptop mode" (to spin down your hard drive for longer
+# periods of time), install the laptop-mode-tools package and configure
+# it in /etc/laptop-mode/laptop-mode.conf.
+#注:要启用“便捷式模式”(将你的硬盘旋转更长的
+#时间段)，安装laptop-mode-tools包并配置。
+#它在/etc/laptop-mode/laptop-mode.conf
+通过这个说明可以知道laptop-mode-tools的配置在etc/laptop-mode/laptop-mode.conf这个文件里。
+
+6、配置etc/laptop-mode/laptop-mode.conf文件
+
+把下面两个地方有0的，改成1就可以了，保存。
+###############################################################################
+
+#
+# Enable laptop mode when on battery power.
+#
+ENABLE_LAPTOP_MODE_ON_BATTERY=1                  <======这里
+
+#
+# Enable laptop mode when on AC power.
+#
+ENABLE_LAPTOP_MODE_ON_AC=1
+
+
+#
+# Enable laptop mode when the laptop's lid is closed, even when we're on AC
+# power? (ACPI-ONLY)
+#
+ENABLE_LAPTOP_MODE_WHEN_LID_CLOSED=1             <========这里
+
+
+配置完上面的文件重启就可以了。
+————————————————
+版权声明：本文为CSDN博主「Pipci」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/Pipcie/java/article/details/79534690
